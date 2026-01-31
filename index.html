@@ -177,6 +177,20 @@
     html.page-loaded .st5{transition-delay:440ms}
     html.page-loaded .st6{transition-delay:520ms}
   </style>
+<script>
+(function(){
+  const isMobile = (window.matchMedia && window.matchMedia("(max-width: 820px), (pointer: coarse)").matches)
+    || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const forceDesktop = /[?&]desktop=1/.test(location.search);
+  if(isMobile && !forceDesktop){
+    const p = (location.pathname.split("/").pop() || "index.html").toLowerCase();
+    const target = (p === "map.html") ? "map_mobile.html" : "index_mobile.html";
+    if(p !== target){
+      location.replace(target + location.search);
+    }
+  }
+})();
+</script>
 </head>
 <body>
   <div class="pageTransition" aria-hidden="true"></div>
