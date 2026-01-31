@@ -142,6 +142,31 @@ main{padding:12px 14px 22px}
 
 .smallLinks{margin-top:12px; text-align:center; color:var(--muted2); font-size:12.5px}
 .smallLinks a{color:rgba(255,255,255,.75); text-decoration:none; border-bottom:1px dashed rgba(255,255,255,.35)}
+
+
+/* === Mobile scroll-tear / seam fixes (Android Chrome) ===
+   backdrop-filter + large shadows can cause visible horizontal seams while scrolling.
+   We disable them on coarse-pointer devices and use solid translucent fills instead.
+*/
+@media (pointer: coarse), (max-width: 820px){
+  header{backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
+         background: rgba(11,18,32,.92) !important;}
+  .dHead, .pcHead{
+    backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
+    background: rgba(20,25,34,.88) !important;
+  }
+  .iconBtn, .langPill, .detail, .pcPanel{
+    box-shadow:none !important;
+  }
+  /* Reduce banding from very transparent layers */
+  .list{background: rgba(0,0,0,.22) !important;}
+  .item{background: transparent;}
+  .detail{background: rgba(255,255,255,.07) !important;}
+  .pcPanel{background: rgba(0,0,0,.20) !important;}
+  /* Force GPU layer to avoid repaint seams */
+  header, .list, .detail, .pcPanel{transform: translateZ(0);}
+  body{overflow-x:hidden;}
+}
 </style>
 </head>
 <body>
