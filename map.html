@@ -232,7 +232,75 @@ g.marker{will-change:transform;}
 .pcCountry{font-weight:800; font-size:15px; margin:0 0 4px}
 .pcRegion{color:var(--muted); font-size:12px; margin:0 0 12px}
 .pcList{display:grid; gap:10px}
-.pcItem{background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:10px 12px}
+.pcItem{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;
+  padding:10px 12px;
+  display:grid;
+  grid-template-columns:140px 1fr;
+  gap:12px;
+  align-items:start;
+}
+@media (max-width:720px){
+  .pcItem{grid-template-columns:1fr}
+  .pcCoverBox{width:100%; height:180px}
+}
+
+/* Cover */
+.pcCoverBox{
+  width:140px;
+  height:190px;
+  border-radius:12px;
+  overflow:hidden;
+  background: rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.10);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.pcCover{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+/* Author vs Work separation */
+.pcMeta{min-width:0}
+.pcAuthorBlock{
+  padding:8px 10px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(0,0,0,.16);
+}
+.pcAName{
+  font-weight:900;
+  letter-spacing:.2px;
+  margin:0 0 6px 0;
+}
+.pcBio{
+  margin:0;
+  font-size:12.5px;
+  line-height:1.45;
+  color:var(--muted);
+}
+.pcDivider{
+  height:1px;
+  margin:10px 2px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+}
+.pcWorkBlock{
+  padding:8px 10px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.03);
+}
+.pcWTitle{
+  font-weight:800;
+  margin:0 0 6px 0;
+}
+
 .pcItem b{font-weight:800}
 .pcEmpty{color:var(--muted); font-size:13px}
 
@@ -298,6 +366,14 @@ g.marker{will-change:transform;}
   color:#9aa4b2;
   margin-top:6px;
 }
+
+.pcBio{
+  font-size:12.5px;
+  line-height:1.45;
+  color:var(--muted);
+  margin-top:6px;
+}
+
 .pcCaret{
   display:inline-block;
   width:8px;
@@ -362,18 +438,6 @@ svg .ocean{ fill: var(--ocean); }
 
 
 /* --- Cover placeholder when not found --- */
-.pcCoverBox{
-  width:140px;
-  height:190px;
-  border-radius:12px;
-  overflow:hidden;
-  background: rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.10);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
 .pcNoCover{
   width:100%;
   height:100%;
@@ -488,21 +552,148 @@ max-height: 42px;
 html.page-loaded #lpHomeBtn{opacity:1; transform: translateY(0) translateZ(0); filter:none; transition: opacity 520ms ease, transform 520ms ease, filter 520ms ease; transition-delay:160ms;}
 html.page-leave #lpHomeBtn{opacity:0; transition: opacity 260ms ease;}
 
-</style>
-<script>
-(function(){
-  const isMobile = (window.matchMedia && window.matchMedia("(max-width: 820px), (pointer: coarse)").matches)
-    || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  const forceDesktop = /[?&]desktop=1/.test(location.search);
-  if(isMobile && !forceDesktop){
-    const p = (location.pathname.split("/").pop() || "index.html").toLowerCase();
-    const target = (p === "map.html") ? "map_mobile.html" : "index_mobile.html";
-    if(p !== target){
-      location.replace(target + location.search);
-    }
+
+/* --- Author vs Literature separation --- */
+.pcItem{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:8px;
+}
+.pcAuthor{
+  padding:8px 10px;
+  border-radius:10px;
+  background:rgba(96,165,250,.10);
+  border:1px solid rgba(96,165,250,.35);
+}
+.pcAuthor b{
+  font-size:14px;
+}
+.pcBio{
+  font-size:13px;
+  line-height:1.45;
+  color:var(--muted);
+  margin-top:4px;
+}
+.pcWork{
+  padding:8px 10px;
+  border-radius:10px;
+  background:rgba(245,158,11,.10);
+  border:1px solid rgba(245,158,11,.35);
+}
+.pcWorkTitle{
+  font-weight:700;
+  font-size:13.5px;
+}
+
+
+
+/* === Mobile anti-banding / anti-seams fix (Android Chrome) ===
+   Strategy:
+   1) Avoid complex multi-radial gradients directly on scrollable body.
+   2) Put background on fixed pseudo-layer rendered once.
+   3) Make main scrolling surfaces opaque (no alpha over gradients).
+   4) Add subtle noise overlay to hide 8-bit banding.
+*/
+@media (max-width: 820px), (pointer: coarse){
+  html, body{
+    background: #0b1220 !important;
   }
-})();
-</script>
+  body{
+    position: relative;
+    overflow-x: hidden;
+  }
+  /* Fixed background layer (no seams while scrolling) */
+  body::before{
+    content:"";
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background:
+      radial-gradient(900px 600px at 50% -10%, rgba(255,255,255,.08), transparent 65%),
+      radial-gradient(900px 600px at 20% 30%, rgba(96,165,250,.10), transparent 65%),
+      radial-gradient(900px 600px at 80% 35%, rgba(52,211,153,.08), transparent 65%),
+      radial-gradient(900px 650px at 50% 110%, rgba(245,158,11,.08), transparent 70%),
+      linear-gradient(180deg, #0b1220, #0f172a);
+    transform: translateZ(0);
+    will-change: transform;
+    pointer-events:none;
+  }
+  /* Subtle noise overlay to mask banding */
+  body::after{
+    content:"";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: url('data:image/png;base64,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');
+    background-size: 180px 180px;
+    opacity: .035;
+    mix-blend-mode: overlay;
+    pointer-events:none;
+  }
+
+  /* Disable blur/glass (major source of seams) */
+  *{
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  /* Remove transition overlay on mobile (can add bands) */
+  .pageTransition{ display:none !important; }
+
+  /* Make long scroll surfaces opaque (no alpha over gradient) */
+  .sidebar{
+    background: #0f172a !important;
+    border-right:none !important;
+  }
+  .list{
+    background: #0b1220 !important;
+    border-color: rgba(255,255,255,.08) !important;
+  }
+  .item{
+    background: #0b1220 !important;
+    border-bottom-color: rgba(255,255,255,.06) !important;
+  }
+  .item:hover{ background: #0f172a !important; }
+
+  .topbar{
+    background: rgba(11,18,32,.98) !important;
+    border-bottom:1px solid rgba(255,255,255,.08) !important;
+  }
+  .langPill, #lpHomeBtn{
+    background: rgba(255,255,255,.12) !important;
+    border-color: rgba(255,255,255,.20) !important;
+    box-shadow:none !important;
+  }
+
+  /* Remove heavy shadows that force re-rasterization */
+  .mapFrame, .card, .pcPanel, .pcItem{
+    box-shadow: none !important;
+  }
+  .mapFrame::before, .mapFrame::after{ display:none !important; }
+
+  /* Ensure the map area still looks separated */
+  .mapFrame{
+    border: 1px solid rgba(255,255,255,.10) !important;
+    background: #0e121a !important;
+  }
+
+  /* Bottom-sheet card stays, but keep it clean */
+  .card{
+    background: rgba(20,28,42,.96) !important;
+    border-color: rgba(255,255,255,.10) !important;
+  }
+
+  /* Literature panel more solid */
+  .pcPanel{
+    background: rgba(15,23,42,.96) !important;
+    border-color: rgba(255,255,255,.10) !important;
+  }
+  .pcItem{
+    background: rgba(11,18,32,.92) !important;
+    border-color: rgba(255,255,255,.10) !important;
+  }
+}
+</style>
 </head>
 <body>
 <div class=\"pageTransition\" aria-hidden=\"true\"></div>
@@ -1999,6 +2190,329 @@ const POSTCOLONIAL = {
   }
 };
 
+
+const AUTHOR_BIOS = {
+  "Abdulkader Hassan": {
+    "en": "Author featured in the Djibouti section of this atlas. Their writing engages with decolonization and colonial legacies—diaspora and displacement are central postcolonial themes: who speaks, from where, and in what language.",
+    "ru": "Автор, представленный в разделе «Джибути» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — темы диаспоры и травмы — центральные для постколониализма: кто говорит, откуда и на каком языке."
+  },
+  "Abdullah Al-Kuwari": {
+    "en": "Author featured in the Qatar section of this atlas. Their writing engages with decolonization and colonial legacies—shows how power and tradition shape subjectivity after colonial transformations.",
+    "ru": "Автор, представленный в разделе «Катар» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает, как власть и нормы формируют субъектность в обществе после колониальных трансформаций."
+  },
+  "Abdullah Ibn Abbas": {
+    "en": "Author featured in the Guinea-Bissau section of this atlas. Their writing engages with decolonization and colonial legacies—exposes mechanisms of colonial control and the reshaping of dignity and authority.",
+    "ru": "Автор, представленный в разделе «Гвинея-Бисау» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — раскрывает механизмы колониального контроля и разрушение местных отношений власти и достоинства."
+  },
+  "Abdulrazak Gurnah": {
+    "en": "Tanzanian-born British novelist and Nobel laureate; his fiction examines the Indian Ocean world, displacement, and colonial legacies.",
+    "ru": "Писатель, родившийся в Танзании, живёт в Британии; лауреат Нобелевской премии. Его романы о перемещениях людей и колониальных наследиях в мире Индийского океана."
+  },
+  "Ahmadou Kourouma": {
+    "en": "Author featured in the Côte d’Ivoire section of this atlas. Their writing engages with decolonization and colonial legacies—shows the gap between freedom’s promise and continued colonial logics after decolonization.",
+    "ru": "Автор, представленный в разделе «Кот-д’Ивуар» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает разрыв между обещанием свободы и реальностью, где колониальные логики продолжаются."
+  },
+  "Alain Mabanckou": {
+    "en": "Author featured in the Republic of the Congo section of this atlas. Their writing engages with decolonization and colonial legacies—critiques postcolonial reality and inherited structures through voice, satire, and oral-like narration.",
+    "ru": "Автор, представленный в разделе «Конго (Браззавиль)» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — критика постколониальной реальности и наследия колониальных структур через полифонию и разговорную речь."
+  },
+  "Albert Camus": {
+    "en": "French-Algerian writer and Nobel laureate whose fiction is often read through the social and political tensions of colonial Algeria.",
+    "ru": "Франко-алжирский писатель, лауреат Нобелевской премии; его прозу часто читают через призму напряжений колониального Алжира."
+  },
+  "Alda Espírito Santo": {
+    "en": "Author featured in the São Tomé and Príncipe section of this atlas. Their writing engages with decolonization and colonial legacies—poetry becomes cultural self-definition after empire and a way to reclaim voice.",
+    "ru": "Автор, представленный в разделе «Сан-Томе и Принсипи» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — поэзия становится формой культурной самоидентификации после колониализма и способом вернуть голос."
+  },
+  "Ali al-Muqri": {
+    "en": "Author featured in the Yemen section of this atlas. Their writing engages with decolonization and colonial legacies—thinks minorities and belonging—issues sharpened by postcolonial nation-states.",
+    "ru": "Автор, представленный в разделе «Йемен» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — осмысляет меньшинства и границы принадлежности, которые обостряются в постколониальных государствах."
+  },
+  "Amadou Hampâté Bâ": {
+    "en": "Author featured in the Mali section of this atlas. Their writing engages with decolonization and colonial legacies—shows colonial power as a system of bargains where language becomes an instrument of rule.",
+    "ru": "Автор, представленный в разделе «Мали» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает колониальную власть как систему сделок и манипуляций, где язык становится инструментом власти."
+  },
+  "Amadou Sesay": {
+    "en": "Author featured in the Sierra Leone section of this atlas. Their writing engages with decolonization and colonial legacies—makes room for plural postcolonial voices and disrupts a single ‘exotic’ image of africa.",
+    "ru": "Автор, представленный в разделе «Сьерра-Леоне» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — дает пространство множественным постколониальным голосам и разрушает единый «экзотический» образ африки."
+  },
+  "Amina Al-Abbas": {
+    "en": "Author featured in the Bahrain section of this atlas. Their writing engages with decolonization and colonial legacies—poetry as cultural self-assertion and resistance to erasure is a core postcolonial practice.",
+    "ru": "Автор, представленный в разделе «Бахрейн» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — поэзия фиксирует культурное самоназывание и сопротивление стиранию — важные постколониальные практики."
+  },
+  "Arundhati Roy": {
+    "en": "Indian writer and essayist known for fiction and political non‑fiction; her work links everyday life to histories of empire, inequality, and state violence.",
+    "ru": "Индийская писательница и эссеистка; в её текстах частная жизнь соединяется с историей империи, неравенства и насилия государства."
+  },
+  "Assia Djebar": {
+    "en": "Algerian novelist, filmmaker, and historian whose writing foregrounds women’s voices and memory under French colonialism and after independence.",
+    "ru": "Алжирская писательница, режиссёр и историк; в её прозе звучат женские голоса и тема памяти о французском колониализме и времени после независимости."
+  },
+  "Ayi Kwei Armah": {
+    "en": "Author featured in the Ghana section of this atlas. Their writing engages with decolonization and colonial legacies—a key ‘post-independence’ text on how colonial power patterns persist in new states.",
+    "ru": "Автор, представленный в разделе «Гана» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — ключевой текст о «пост-независимости»: как колониальные модели власти воспроизводятся в новом государстве."
+  },
+  "Bessie Head": {
+    "en": "Author featured in the Botswana section of this atlas. Their writing engages with decolonization and colonial legacies—explores post-independence transformation: land, power, modernization, and local agency.",
+    "ru": "Автор, представленный в разделе «Ботсвана» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — исследует постколониальную перестройку общества: землю, власть, развитие и голос местного сообщества."
+  },
+  "Boubou Hama": {
+    "en": "Author featured in the Niger section of this atlas. Their writing engages with decolonization and colonial legacies—affirms precolonial knowledge forms and resists eurocentric literary canons.",
+    "ru": "Автор, представленный в разделе «Нигер» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — переутверждает доколониальные формы знания и литературы как равноправные европейскому канону."
+  },
+  "Bảo Ninh": {
+    "en": "Author featured in the Vietnam section of this atlas. Their writing engages with decolonization and colonial legacies—reclaims local voice about war shaped by imperial conflicts and foreign domination.",
+    "ru": "Автор, представленный в разделе «Вьетнам» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает войну как последствия имперских конфликтов и борьбу за собственный исторический голос."
+  },
+  "Camara Laye": {
+    "en": "Author featured in the Guinea section of this atlas. Their writing engages with decolonization and colonial legacies—shows colonial education as a tool of power and the making of divided identities.",
+    "ru": "Автор, представленный в разделе «Гвинея» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает колониальное образование как инструмент власти и формирование «двойной» идентичности."
+  },
+  "Catherine Lim": {
+    "en": "Author featured in the Singapore section of this atlas. Their writing engages with decolonization and colonial legacies—shows postcolonial modernization and cultural hybridity through local micro-plots.",
+    "ru": "Автор, представленный в разделе «Сингапур» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает постколониальную модернизацию и культурную гибридность через локальные сюжеты."
+  },
+  "Chinua Achebe": {
+    "en": "Nigerian novelist and critic, widely regarded as a foundational figure of modern African literature; he wrote about cultural disruption and power under colonialism.",
+    "ru": "Нигерийский писатель и критик, одна из ключевых фигур современной африканской литературы; писал о культурном разломе и власти в условиях колониализма."
+  },
+  "Claude McKay": {
+    "en": "Jamaican-born poet and novelist linked to the Harlem Renaissance; wrote about race, migration, and colonial modernity.",
+    "ru": "Поэт и прозаик, родившийся на Ямайке, связанный с Гарлемским ренессансом; писал о расе, миграции и колониальной современности."
+  },
+  "Derek Walcott": {
+    "en": "Saint Lucian poet and playwright, Nobel laureate; his writing explores Caribbean history, language, and the scars of colonialism.",
+    "ru": "Поэт и драматург из Сент‑Люсии, лауреат Нобелевской премии; писал о карибской истории, языке и травмах колониализма."
+  },
+  "Dominic Mulaishi": {
+    "en": "Author featured in the Zambia section of this atlas. Their writing engages with decolonization and colonial legacies—captures the transition: collapse of colonial order and the difficulty of building the new.",
+    "ru": "Автор, представленный в разделе «Замбия» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает переходный период: распад колониального порядка и сложность построения нового."
+  },
+  "Doris Lessing": {
+    "en": "Author featured in the Zimbabwe section of this atlas. Their writing engages with decolonization and colonial legacies—unmasks racial/class hierarchies of colonial rule and the psychology of settler power.",
+    "ru": "Автор, представленный в разделе «Зимбабве» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — разоблачает расовые и классовые иерархии колониального режима и психологию поселенческого господства."
+  },
+  "Fadwa Tuqan": {
+    "en": "Author featured in the Jordan section of this atlas. Their writing engages with decolonization and colonial legacies—a women’s voice from a region of imperial entanglements broadens postcolonial literary maps.",
+    "ru": "Автор, представленный в разделе «Иордания» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — женский голос из региона колониальных/имперских пересечений расширяет постколониальную карту литературы."
+  },
+  "Florence Aïssé": {
+    "en": "Author featured in the Benin section of this atlas. Their writing engages with decolonization and colonial legacies—can be read as critique of colonial modernity’s inherited hierarchies and forms of alienation.",
+    "ru": "Автор, представленный в разделе «Бенин» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — считывается как критика наследия колониальной модерности: отчуждение, разрыв норм и навязанных иерархий."
+  },
+  "Gaël Faye": {
+    "en": "Author featured in the Burundi section of this atlas. Their writing engages with decolonization and colonial legacies—shows afterlives of colonial identity politics and classifications that feed conflict and trauma.",
+    "ru": "Автор, представленный в разделе «Бурунди» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает последствия колониальных классификаций и политик идентичности, приведших к травме и конфликту."
+  },
+  "George Lamming": {
+    "en": "Barbadian novelist and essayist; a major voice of Caribbean decolonization and migration narratives.",
+    "ru": "Барбадосский писатель и эссеист; один из ключевых голосов карибской деколонизации и литературы миграции."
+  },
+  "Grace Mera Molisa": {
+    "en": "Author featured in the Vanuatu section of this atlas. Their writing engages with decolonization and colonial legacies—postcolonial literature as activism: language used for resistance and dignity.",
+    "ru": "Автор, представленный в разделе «Вануату» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — постколониальная литература как активизм: язык служит сопротивлению и восстановлению достоинства."
+  },
+  "Hanan al-Shaykh": {
+    "en": "Author featured in the Lebanon section of this atlas. Their writing engages with decolonization and colonial legacies—connects gendered control to postcolonial modernity and global capital.",
+    "ru": "Автор, представленный в разделе «Ливан» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — критика патриархальных и социально-экономических структур в постколониальном контексте глобального капитала."
+  },
+  "Ian Strachan": {
+    "en": "Author featured in the The Bahamas section of this atlas. Their writing engages with decolonization and colonial legacies—focuses on postcolonial inequality and the afterlives of colonial systems.",
+    "ru": "Автор, представленный в разделе «Багамы» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — фокус на последствиях колониализма и неравенства в постколониальной реальности."
+  },
+  "Jack Harris": {
+    "en": "Author featured in the Nauru section of this atlas. Their writing engages with decolonization and colonial legacies—critiques colonial extraction economies and their neo-colonial continuations.",
+    "ru": "Автор, представленный в разделе «Науру» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — критика колониальной экономики и экстракции: неоколониальные формы эксплуатации территорий."
+  },
+  "Jack Mapanje": {
+    "en": "Author featured in the Malawi section of this atlas. Their writing engages with decolonization and colonial legacies—addresses the postcolonial state: repression, control, and the fight for voice.",
+    "ru": "Автор, представленный в разделе «Малави» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — поднимает темы постколониального государства: репрессии, контроль и борьба за голос."
+  },
+  "Jamaica Kincaid": {
+    "en": "Antiguan-American writer whose prose critiques empire, tourism, and family history as entangled with colonial power.",
+    "ru": "Писательница из Антигуа (живёт в США); её проза критикует империю, туризм и семейную память как часть колониальной власти."
+  },
+  "Jean Rhys": {
+    "en": "Dominica-born writer best known for reimagining the Caribbean background of classic English literature and exposing colonial gender and racial hierarchies.",
+    "ru": "Писательница, родившаяся на Доминике; известна переосмыслением карибского контекста классической английской литературы и критикой колониальных иерархий."
+  },
+  "Jokha Alharthi": {
+    "en": "Author featured in the Oman section of this atlas. Their writing engages with decolonization and colonial legacies—shows postcolonial modernity beyond europe: class, gender, and changing power structures.",
+    "ru": "Автор, представленный в разделе «Оман» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает постколониальную современность вне европы: изменение норм, классов и языка власти."
+  },
+  "Joseph Brahim Seid": {
+    "en": "Author featured in the Chad section of this atlas. Their writing engages with decolonization and colonial legacies—decolonizes the gaze by foregrounding local experience beyond colonial descriptions.",
+    "ru": "Автор, представленный в разделе «Чад» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — деколонизирует взгляд на страну, выводя местный опыт из тени колониальных описаний."
+  },
+  "José Rizal": {
+    "en": "Filipino writer and reformer whose novels became central to anti-colonial thought under Spanish rule.",
+    "ru": "Филиппинский писатель и общественный деятель; его романы стали важной частью антиколониальной мысли во времена испанского владычества."
+  },
+  "Julian Maka’a": {
+    "en": "Author featured in the Solomon Islands section of this atlas. Their writing engages with decolonization and colonial legacies—restores local perspectives and cultural autonomy after colonial intervention.",
+    "ru": "Автор, представленный в разделе «Соломоновы Острова» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — возвращает локальный взгляд и культурную автономию малых обществ после колониальных вмешательств."
+  },
+  "Julien Ngoma": {
+    "en": "Author featured in the Gabon section of this atlas. Their writing engages with decolonization and colonial legacies—critiques postcolonial bureaucracy and dependencies inherited from colonial systems.",
+    "ru": "Автор, представленный в разделе «Габон» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — критика постколониальной бюрократии и зависимостей, унаследованных от колониальной системы."
+  },
+  "Kamau Brathwaite": {
+    "en": "Barbadian poet and historian who developed concepts of Caribbean ‘nation language’ and wrote about slavery, diaspora, and colonial aftermaths.",
+    "ru": "Барбадосский поэт и историк; развивал идею «языка нации» Карибов и писал о рабстве, диаспоре и последствиях колониализма."
+  },
+  "Kevin Baldeo": {
+    "en": "Author featured in the Saint Vincent and the Grenadines section of this atlas. Their writing engages with decolonization and colonial legacies—affirms multilingual caribbean literary autonomy beyond metropolitan gatekeeping.",
+    "ru": "Автор, представленный в разделе «Сент-Винсент и Гренадины» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — фиксирует многоязычие и культурную автономию карибов, разрывая монополию метрополии на «литературу»."
+  },
+  "Kiran Desai": {
+    "en": "Indian novelist writing in English; explores globalization, migration, and uneven postcolonial modernity.",
+    "ru": "Индийская писательница, пишущая по‑английски; исследует глобализацию, миграцию и неравномерную постколониальную современность."
+  },
+  "Kofi Awoonor": {
+    "en": "Author featured in the Togo section of this atlas. Their writing engages with decolonization and colonial legacies—registers colonial trauma and the struggle for subjectivity through language.",
+    "ru": "Автор, представленный в разделе «Того» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — поэзия фиксирует травму колониализма и борьбу за субъектность через язык и образ."
+  },
+  "Lenrie Peters": {
+    "en": "Author featured in the The Gambia section of this atlas. Their writing engages with decolonization and colonial legacies—records peripheral experience: language, mobility, and self-naming in a postcolonial world.",
+    "ru": "Автор, представленный в разделе «Гамбия» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — фиксирует опыт периферии империи: язык, миграция и культурное самоназывание в постколониальном мире."
+  },
+  "Lloyd Fernando": {
+    "en": "Author featured in the Malaysia section of this atlas. Their writing engages with decolonization and colonial legacies—explores hybrid identity and racial engineering as colonial legacies.",
+    "ru": "Автор, представленный в разделе «Малайзия» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — исследует гибридную идентичность и расовые напряжения как наследие колониальной социальной инженерии."
+  },
+  "Loung Ung": {
+    "en": "Author featured in the Cambodia section of this atlas. Their writing engages with decolonization and colonial legacies—witnessing trauma expands postcolonial discussions of power, violence, and memory.",
+    "ru": "Автор, представленный в разделе «Камбоджа» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — свидетельство о насилии и травме региона, важное для постколониального разговора о власти и памяти."
+  },
+  "Léopold Sédar Senghor": {
+    "en": "Author featured in the Senegal section of this atlas. Their writing engages with decolonization and colonial legacies—an early anti-colonial self-naming that asserts black identity and culture.",
+    "ru": "Автор, представленный в разделе «Сенегал» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — один из ранних голосов антиколониального самоназвания: утверждение чёрной идентичности и культуры."
+  },
+  "Ma Ma Lay": {
+    "en": "Author featured in the Myanmar section of this atlas. Their writing engages with decolonization and colonial legacies—shows how violence and inherited structures shape postcolonial societies and speech.",
+    "ru": "Автор, представленный в разделе «Мьянма» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает, как колониальное наследие и война формируют общество, где власть контролирует речь и жизнь."
+  },
+  "Merle Collins": {
+    "en": "Author featured in the Grenada section of this atlas. Their writing engages with decolonization and colonial legacies—frames political change as a postcolonial process shaped by power, violence, and memory.",
+    "ru": "Автор, представленный в разделе «Гренада» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает политическую историю острова как постколониальный процесс: власть, насилие и память."
+  },
+  "Mia Couto": {
+    "en": "Author featured in the Mozambique section of this atlas. Their writing engages with decolonization and colonial legacies—explores the afterlives of colonialism and war through a localized poetics of memory.",
+    "ru": "Автор, представленный в разделе «Мозамбик» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — исследует последствия колониализма и войны, создавая локальную поэтику памяти и выживания."
+  },
+  "Michael Ondaatje": {
+    "en": "Sri Lankan–Canadian novelist and poet; his work often blends memory and history across migration and colonial contexts.",
+    "ru": "Шри-ланкийско‑канадский писатель и поэт; в его прозе память и история переплетаются в опыте миграции и колониальных контекстах."
+  },
+  "Mohammed Al Murr": {
+    "en": "Author featured in the United Arab Emirates section of this atlas. Their writing engages with decolonization and colonial legacies—connects postcolonial modernization to global economy and migrant labor.",
+    "ru": "Автор, представленный в разделе «ОАЭ» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — связывает постколониальную модернизацию с глобальной экономикой и мигрантским трудом."
+  },
+  "Mohsin Hamid": {
+    "en": "Pakistani novelist and essayist known for concise, globally oriented fiction about migration, identity, and contemporary power.",
+    "ru": "Пакистанский писатель и эссеист; известен лаконичной прозой о миграции, идентичности и современной власти."
+  },
+  "Mongo Beti": {
+    "en": "Author featured in the Cameroon section of this atlas. Their writing engages with decolonization and colonial legacies—deconstructs the mission discourse and shows cultural violence of colonial ideology.",
+    "ru": "Автор, представленный в разделе «Камерун» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — деконструирует миссионерский дискурс и показывает культурное насилие «цивилизаторской» идеологии."
+  },
+  "Moussa Ould Ebnou": {
+    "en": "Author featured in the Mauritania section of this atlas. Their writing engages with decolonization and colonial legacies—uses liminality to think postcolonial hybridity and life between cultures.",
+    "ru": "Автор, представленный в разделе «Мавритания» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — фигура «барзаха» помогает осмыслить постколониальную гибридность и жизнь между культурами."
+  },
+  "Nazi Boni": {
+    "en": "Author featured in the Burkina Faso section of this atlas. Their writing engages with decolonization and colonial legacies—reclaims local traditions and shows how colonization fractures social structures.",
+    "ru": "Автор, представленный в разделе «Буркина-Фасо» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — возвращает ценность местным традициям и показывает, как колонизация ломает социальные структуры."
+  },
+  "Ndeitila Mbako": {
+    "en": "Author featured in the Namibia section of this atlas. Their writing engages with decolonization and colonial legacies—restores multiple local voices against colonial monopoly over representation.",
+    "ru": "Автор, представленный в разделе «Намибия» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — возвращает множественные локальные голоса и сопротивляется колониальной монополии на представление."
+  },
+  "Ngũgĩ wa Thiong'o": {
+    "en": "Kenyan writer and theorist of decolonization; he advocates linguistic and cultural decolonization and writes about colonial violence and its afterlives.",
+    "ru": "Кенийский писатель и теоретик деколонизации; выступает за языковую и культурную деколонизацию и пишет о колониальном насилии и его последствиях."
+  },
+  "Nuruddin Farah": {
+    "en": "Somali novelist whose work examines dictatorship, exile, and the long shadow of colonial borders and institutions.",
+    "ru": "Сомалийский писатель; в его романах — диктатура, изгнание и «длинная тень» колониальных границ и институтов."
+  },
+  "Outieng Somlit": {
+    "en": "Author featured in the Laos section of this atlas. Their writing engages with decolonization and colonial legacies—plural ‘voices’ counter external narratives and restore local perspective.",
+    "ru": "Автор, представленный в разделе «Лаос» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — множественность «голосов» противостоит внешним нарративам и возвращает локальную перспективу."
+  },
+  "Pepetela": {
+    "en": "Author featured in the Angola section of this atlas. Their writing engages with decolonization and colonial legacies—centers anti-colonial resistance and the complexities of nation-making after empire.",
+    "ru": "Автор, представленный в разделе «Ангола» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — фиксирует антиколониальное сопротивление и сложность нации после колониализма, а не «простую победу»."
+  },
+  "Pierre Samba": {
+    "en": "Author featured in the Central African Republic section of this atlas. Their writing engages with decolonization and colonial legacies—uses nature and silence as metaphors for colonial violence and suppressed histories.",
+    "ru": "Автор, представленный в разделе «ЦАР» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — природа и «тишина» работают как метафора колониального насилия и невысказанной истории."
+  },
+  "Pramoedya Ananta Toer": {
+    "en": "Indonesian novelist who wrote landmark historical fiction on colonial rule, nationalism, and political repression.",
+    "ru": "Индонезийский писатель, автор знаковых исторических романов о колониальном правлении, национализме и политических репрессиях."
+  },
+  "Salman Rushdie": {
+    "en": "British-Indian novelist associated with postcolonial and diasporic writing; known for blending history, myth, and satire to question power and identity.",
+    "ru": "Британско‑индийский писатель постколониальной и диаспоральной традиции; соединяет историю, миф и сатиру, чтобы говорить о власти и идентичности."
+  },
+  "Scholastique Mukasonga": {
+    "en": "Rwandan-French writer; her work is shaped by memory, exile, and the histories of violence in Rwanda.",
+    "ru": "Руандийско‑французская писательница; её проза связана с памятью, изгнанием и историей насилия в Руанде."
+  },
+  "Sinan Antoon": {
+    "en": "Iraqi-American poet and novelist; writes about war, authoritarianism, and cultural memory in modern Iraq.",
+    "ru": "Иракско‑американский поэт и писатель; пишет о войне, авторитаризме и культурной памяти современного Ирака."
+  },
+  "Sony Labou Tansi": {
+    "en": "Author featured in the DR Congo section of this atlas. Their writing engages with decolonization and colonial legacies—links colonial violence to postcolonial regimes and reveals cycles of repression.",
+    "ru": "Автор, представленный в разделе «Конго (Киншаса)» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — связывает колониальное насилие с постколониальными режимами и демонстрирует цикл репрессий."
+  },
+  "Subramani": {
+    "en": "Author featured in the Fiji section of this atlas. Their writing engages with decolonization and colonial legacies—shows postcolonial pressures of tourism, markets, and externally scripted ‘development’.",
+    "ru": "Автор, представленный в разделе «Фиджи» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает постколониальные последствия туризма, рынка и внешних сценариев развития."
+  },
+  "Sulaiman Addonia": {
+    "en": "Author featured in the Eritrea section of this atlas. Their writing engages with decolonization and colonial legacies—collective witnessing counters historical erasure and is central to postcolonial remembrance.",
+    "ru": "Автор, представленный в разделе «Эритрея» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — коллективность и свидетельство — важный постколониальный жанр, противостоящий стиранию истории."
+  },
+  "Tahmima Anam": {
+    "en": "Author featured in the Bangladesh section of this atlas. Their writing engages with decolonization and colonial legacies—shows nation-making and the costs of decolonization, including trauma and violence.",
+    "ru": "Автор, представленный в разделе «Бангладеш» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает рождение нации и цену освобождения, включая травму насилия и распад имперских связей."
+  },
+  "Tayeb Salih": {
+    "en": "Sudanese novelist whose classic works explore the encounter between Sudan and Britain and the psychological aftereffects of empire.",
+    "ru": "Суданский писатель; в его классических романах исследуется встреча Судана и Британии и психологические последствия империи."
+  },
+  "Tereti Tea’iti": {
+    "en": "Author featured in the Kiribati section of this atlas. Their writing engages with decolonization and colonial legacies—asserts cultural continuity and the right of small peoples to their own narratives.",
+    "ru": "Автор, представленный в разделе «Кирибати» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — закрепляет культурную непрерывность и право малых народов на собственный нарратив."
+  },
+  "Thomas Mofolo": {
+    "en": "Author featured in the Lesotho section of this atlas. Their writing engages with decolonization and colonial legacies—rewrites history from an african center, challenging colonial versions of the past.",
+    "ru": "Автор, представленный в разделе «Лесото» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — переписывает историю из африканского центра, оспаривая колониальные версии прошлого и героизма."
+  },
+  "Tsitsi Dangarembga": {
+    "en": "Zimbabwean novelist and filmmaker; her work foregrounds gender, education, and the social costs of colonial and postcolonial power.",
+    "ru": "Зимбабвийская писательница и режиссёр; пишет о гендере, образовании и социальной цене колониальной и постколониальной власти."
+  },
+  "Tuai Tuai": {
+    "en": "Author featured in the Tuvalu section of this atlas. Their writing engages with decolonization and colonial legacies—affirms local culture and language against colonial erasure and global standardization.",
+    "ru": "Автор, представленный в разделе «Тувалу» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — утверждает локальную культуру и язык как ответ на колониальное стирание и глобальную стандартизацию."
+  },
+  "V. S. Naipaul": {
+    "en": "Trinidadian-British novelist and Nobel laureate whose work examines migration, colonial legacies, and the ambiguities of postcolonial societies.",
+    "ru": "Тринидадско‑британский писатель, лауреат Нобелевской премии; исследовал миграцию, колониальные наследия и противоречия постколониальных обществ."
+  },
+  "Vincent Eri": {
+    "en": "Author featured in the Papua New Guinea section of this atlas. Their writing engages with decolonization and colonial legacies—shows colonization as cultural violence and identity formation through imposed institutions.",
+    "ru": "Автор, представленный в разделе «Папуа — Новая Гвинея» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает колонизацию как насилие над культурой и формирование идентичности через чужие институты."
+  },
+  "Zakaria Tamer": {
+    "en": "Syrian short-story writer known for allegorical prose critiquing oppression and social injustice.",
+    "ru": "Сирийский писатель‑новеллист; известен аллегоричной прозой, критикующей насилие и социальную несправедливость."
+  }
+};
 function pcText(key){
   return (PC_I18N[lang] && PC_I18N[lang][key]) ? PC_I18N[lang][key] : (PC_I18N.ru[key] || "");
 }
@@ -2217,6 +2731,14 @@ if(!scopeEl) return;
 
 
 
+
+function getAuthorBio(authorName){
+  const bio = (AUTHOR_BIOS && AUTHOR_BIOS[authorName]) ? AUTHOR_BIOS[authorName] : null;
+  if(!bio) return "";
+  const txt = (lang === 'en') ? (bio.en || bio.ru || "") : (bio.ru || bio.en || "");
+  return (txt || "");
+}
+
 function renderPostcolonial(country){
   const titleEl = document.getElementById('pcTitle');
   if(titleEl) titleEl.textContent = pcText('title');
@@ -2243,12 +2765,20 @@ function renderPostcolonial(country){
     <div class="pcList">
       ${data.works.map(w => `
         <div class="pcItem">
-          <img class="pcCover" alt="" src="" data-author="${w.author}" data-title="${w.title}"/>
+          <div class="pcCoverBox">
+            <img class="pcCover" alt="" src="" data-author="${w.author}" data-title="${w.title}"/>
+          </div>
           <div class="pcMeta">
-            <b>${w.author}</b><br/>
-            <span>${w.title}</span>
-            <div class="pcAnnotation" data-tw="1" data-text="${(lang==='en'?(w.annotation_en||w.annotation_ru):(w.annotation_ru||''))}"></div>
-            <div class="pcPostcol" data-tw="1" data-text="${(lang==='en'?(w.postcolonial_en||w.postcolonial_ru):(w.postcolonial_ru||''))}"></div>
+            <div class="pcAuthorBlock">
+              <div class="pcAName">${w.author}</div>
+              ${getAuthorBio(w.author) ? `<div class="pcBio">${getAuthorBio(w.author)}</div>` : ``}
+            </div>
+            <div class="pcDivider" role="presentation"></div>
+            <div class="pcWorkBlock">
+              <div class="pcWTitle">${w.title}</div>
+              <div class="pcAnnotation" data-tw="1" data-text="${(lang==='en'?(w.annotation_en||w.annotation_ru):(w.annotation_ru||''))}"></div>
+              <div class="pcPostcol" data-tw="1" data-text="${(lang==='en'?(w.postcolonial_en||w.postcolonial_ru):(w.postcolonial_ru||''))}"></div>
+            </div>
           </div>
         </div>
       `).join('')}
@@ -2699,7 +3229,14 @@ function setLang(next){
     if(wasOpen) openCard(currentCountry);
   }
 
-  const lbl = document.getElementById('langLabel');
+  
+  // Re-render postcolonial literature block (below the map) when language changes
+  const pcPanel = document.getElementById('pcPanel');
+  if(pcPanel && pcPanel.classList.contains('open')){
+    renderPostcolonial(currentCountry);
+  }
+
+const lbl = document.getElementById('langLabel');
   if(lbl) lbl.textContent = (lang === 'ru') ? 'RU' : 'EN';
 
 }
