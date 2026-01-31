@@ -3,7 +3,19 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Decolonization Atlas</title>
+  
+<script>
+(function(){
+  const p = new URLSearchParams(location.search);
+  if (p.get('desktop') === '1') return;
+  const isMobile = /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent) || window.matchMedia("(max-width: 820px)").matches;
+  const here = location.pathname.split('/').pop();
+  if (isMobile && here !== "index_mobile.html") {
+    location.replace("index_mobile.html" + location.search);
+  }
+})();
+</script>
+<title>Decolonization Atlas</title>
   <style>
     :root{
       --bg:#0b1220;
@@ -177,23 +189,6 @@
     html.page-loaded .st5{transition-delay:440ms}
     html.page-loaded .st6{transition-delay:520ms}
   </style>
-<script>
-(function(){
-  const isMobile = window.matchMedia && window.matchMedia("(max-width: 820px), (pointer: coarse)").matches;
-  const forceDesktop = /[?&]desktop=1/.test(location.search);
-  if(isMobile && !forceDesktop){
-    const p = location.pathname.split("/").pop();
-    if(p === "index.html" || p === "" || !p){
-      location.replace("map_mobile.html" + location.search);
-      return;
-    }
-    if(p === "map.html"){
-      location.replace("map_mobile.html" + location.search);
-      return;
-    }
-  }
-})();
-</script>
 </head>
 <body>
   <div class="pageTransition" aria-hidden="true"></div>
