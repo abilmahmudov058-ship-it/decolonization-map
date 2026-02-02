@@ -232,7 +232,75 @@ g.marker{will-change:transform;}
 .pcCountry{font-weight:800; font-size:15px; margin:0 0 4px}
 .pcRegion{color:var(--muted); font-size:12px; margin:0 0 12px}
 .pcList{display:grid; gap:10px}
-.pcItem{background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:10px 12px}
+.pcItem{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;
+  padding:10px 12px;
+  display:grid;
+  grid-template-columns:140px 1fr;
+  gap:12px;
+  align-items:start;
+}
+@media (max-width:720px){
+  .pcItem{grid-template-columns:1fr}
+  .pcCoverBox{width:100%; height:180px}
+}
+
+/* Cover */
+.pcCoverBox{
+  width:140px;
+  height:190px;
+  border-radius:12px;
+  overflow:hidden;
+  background: rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.10);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.pcCover{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+/* Author vs Work separation */
+.pcMeta{min-width:0}
+.pcAuthorBlock{
+  padding:8px 10px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(0,0,0,.16);
+}
+.pcAName{
+  font-weight:900;
+  letter-spacing:.2px;
+  margin:0 0 6px 0;
+}
+.pcBio{
+  margin:0;
+  font-size:12.5px;
+  line-height:1.45;
+  color:var(--muted);
+}
+.pcDivider{
+  height:1px;
+  margin:10px 2px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+}
+.pcWorkBlock{
+  padding:8px 10px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.03);
+}
+.pcWTitle{
+  font-weight:800;
+  margin:0 0 6px 0;
+}
+
 .pcItem b{font-weight:800}
 .pcEmpty{color:var(--muted); font-size:13px}
 
@@ -298,6 +366,14 @@ g.marker{will-change:transform;}
   color:#9aa4b2;
   margin-top:6px;
 }
+
+.pcBio{
+  font-size:12.5px;
+  line-height:1.45;
+  color:var(--muted);
+  margin-top:6px;
+}
+
 .pcCaret{
   display:inline-block;
   width:8px;
@@ -362,18 +438,6 @@ svg .ocean{ fill: var(--ocean); }
 
 
 /* --- Cover placeholder when not found --- */
-.pcCoverBox{
-  width:140px;
-  height:190px;
-  border-radius:12px;
-  overflow:hidden;
-  background: rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.10);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
 .pcNoCover{
   width:100%;
   height:100%;
@@ -488,19 +552,40 @@ max-height: 42px;
 html.page-loaded #lpHomeBtn{opacity:1; transform: translateY(0) translateZ(0); filter:none; transition: opacity 520ms ease, transform 520ms ease, filter 520ms ease; transition-delay:160ms;}
 html.page-leave #lpHomeBtn{opacity:0; transition: opacity 260ms ease;}
 
+
+/* --- Author vs Literature separation --- */
+.pcItem{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:8px;
+}
+.pcAuthor{
+  padding:8px 10px;
+  border-radius:10px;
+  background:rgba(96,165,250,.10);
+  border:1px solid rgba(96,165,250,.35);
+}
+.pcAuthor b{
+  font-size:14px;
+}
+.pcBio{
+  font-size:13px;
+  line-height:1.45;
+  color:var(--muted);
+  margin-top:4px;
+}
+.pcWork{
+  padding:8px 10px;
+  border-radius:10px;
+  background:rgba(245,158,11,.10);
+  border:1px solid rgba(245,158,11,.35);
+}
+.pcWorkTitle{
+  font-weight:700;
+  font-size:13.5px;
+}
+
 </style>
-<script>
-(function(){
-  const forceDesktop = /[?&]desktop=1/.test(location.search);
-  const isMobile = (window.matchMedia && window.matchMedia("(max-width: 820px), (pointer: coarse)").matches)
-    || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  if(isMobile && !forceDesktop){
-    if(!/map_mobile\.html$/i.test(location.pathname)){
-      location.replace("map_mobile.html" + location.search);
-    }
-  }
-})();
-</script>
 </head>
 <body>
 <div class=\"pageTransition\" aria-hidden=\"true\"></div>
@@ -1997,6 +2082,329 @@ const POSTCOLONIAL = {
   }
 };
 
+
+const AUTHOR_BIOS = {
+  "Abdulkader Hassan": {
+    "en": "Author featured in the Djibouti section of this atlas. Their writing engages with decolonization and colonial legacies—diaspora and displacement are central postcolonial themes: who speaks, from where, and in what language.",
+    "ru": "Автор, представленный в разделе «Джибути» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — темы диаспоры и травмы — центральные для постколониализма: кто говорит, откуда и на каком языке."
+  },
+  "Abdullah Al-Kuwari": {
+    "en": "Author featured in the Qatar section of this atlas. Their writing engages with decolonization and colonial legacies—shows how power and tradition shape subjectivity after colonial transformations.",
+    "ru": "Автор, представленный в разделе «Катар» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает, как власть и нормы формируют субъектность в обществе после колониальных трансформаций."
+  },
+  "Abdullah Ibn Abbas": {
+    "en": "Author featured in the Guinea-Bissau section of this atlas. Their writing engages with decolonization and colonial legacies—exposes mechanisms of colonial control and the reshaping of dignity and authority.",
+    "ru": "Автор, представленный в разделе «Гвинея-Бисау» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — раскрывает механизмы колониального контроля и разрушение местных отношений власти и достоинства."
+  },
+  "Abdulrazak Gurnah": {
+    "en": "Tanzanian-born British novelist and Nobel laureate; his fiction examines the Indian Ocean world, displacement, and colonial legacies.",
+    "ru": "Писатель, родившийся в Танзании, живёт в Британии; лауреат Нобелевской премии. Его романы о перемещениях людей и колониальных наследиях в мире Индийского океана."
+  },
+  "Ahmadou Kourouma": {
+    "en": "Author featured in the Côte d’Ivoire section of this atlas. Their writing engages with decolonization and colonial legacies—shows the gap between freedom’s promise and continued colonial logics after decolonization.",
+    "ru": "Автор, представленный в разделе «Кот-д’Ивуар» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает разрыв между обещанием свободы и реальностью, где колониальные логики продолжаются."
+  },
+  "Alain Mabanckou": {
+    "en": "Author featured in the Republic of the Congo section of this atlas. Their writing engages with decolonization and colonial legacies—critiques postcolonial reality and inherited structures through voice, satire, and oral-like narration.",
+    "ru": "Автор, представленный в разделе «Конго (Браззавиль)» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — критика постколониальной реальности и наследия колониальных структур через полифонию и разговорную речь."
+  },
+  "Albert Camus": {
+    "en": "French-Algerian writer and Nobel laureate whose fiction is often read through the social and political tensions of colonial Algeria.",
+    "ru": "Франко-алжирский писатель, лауреат Нобелевской премии; его прозу часто читают через призму напряжений колониального Алжира."
+  },
+  "Alda Espírito Santo": {
+    "en": "Author featured in the São Tomé and Príncipe section of this atlas. Their writing engages with decolonization and colonial legacies—poetry becomes cultural self-definition after empire and a way to reclaim voice.",
+    "ru": "Автор, представленный в разделе «Сан-Томе и Принсипи» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — поэзия становится формой культурной самоидентификации после колониализма и способом вернуть голос."
+  },
+  "Ali al-Muqri": {
+    "en": "Author featured in the Yemen section of this atlas. Their writing engages with decolonization and colonial legacies—thinks minorities and belonging—issues sharpened by postcolonial nation-states.",
+    "ru": "Автор, представленный в разделе «Йемен» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — осмысляет меньшинства и границы принадлежности, которые обостряются в постколониальных государствах."
+  },
+  "Amadou Hampâté Bâ": {
+    "en": "Author featured in the Mali section of this atlas. Their writing engages with decolonization and colonial legacies—shows colonial power as a system of bargains where language becomes an instrument of rule.",
+    "ru": "Автор, представленный в разделе «Мали» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает колониальную власть как систему сделок и манипуляций, где язык становится инструментом власти."
+  },
+  "Amadou Sesay": {
+    "en": "Author featured in the Sierra Leone section of this atlas. Their writing engages with decolonization and colonial legacies—makes room for plural postcolonial voices and disrupts a single ‘exotic’ image of africa.",
+    "ru": "Автор, представленный в разделе «Сьерра-Леоне» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — дает пространство множественным постколониальным голосам и разрушает единый «экзотический» образ африки."
+  },
+  "Amina Al-Abbas": {
+    "en": "Author featured in the Bahrain section of this atlas. Their writing engages with decolonization and colonial legacies—poetry as cultural self-assertion and resistance to erasure is a core postcolonial practice.",
+    "ru": "Автор, представленный в разделе «Бахрейн» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — поэзия фиксирует культурное самоназывание и сопротивление стиранию — важные постколониальные практики."
+  },
+  "Arundhati Roy": {
+    "en": "Indian writer and essayist known for fiction and political non‑fiction; her work links everyday life to histories of empire, inequality, and state violence.",
+    "ru": "Индийская писательница и эссеистка; в её текстах частная жизнь соединяется с историей империи, неравенства и насилия государства."
+  },
+  "Assia Djebar": {
+    "en": "Algerian novelist, filmmaker, and historian whose writing foregrounds women’s voices and memory under French colonialism and after independence.",
+    "ru": "Алжирская писательница, режиссёр и историк; в её прозе звучат женские голоса и тема памяти о французском колониализме и времени после независимости."
+  },
+  "Ayi Kwei Armah": {
+    "en": "Author featured in the Ghana section of this atlas. Their writing engages with decolonization and colonial legacies—a key ‘post-independence’ text on how colonial power patterns persist in new states.",
+    "ru": "Автор, представленный в разделе «Гана» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — ключевой текст о «пост-независимости»: как колониальные модели власти воспроизводятся в новом государстве."
+  },
+  "Bessie Head": {
+    "en": "Author featured in the Botswana section of this atlas. Their writing engages with decolonization and colonial legacies—explores post-independence transformation: land, power, modernization, and local agency.",
+    "ru": "Автор, представленный в разделе «Ботсвана» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — исследует постколониальную перестройку общества: землю, власть, развитие и голос местного сообщества."
+  },
+  "Boubou Hama": {
+    "en": "Author featured in the Niger section of this atlas. Their writing engages with decolonization and colonial legacies—affirms precolonial knowledge forms and resists eurocentric literary canons.",
+    "ru": "Автор, представленный в разделе «Нигер» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — переутверждает доколониальные формы знания и литературы как равноправные европейскому канону."
+  },
+  "Bảo Ninh": {
+    "en": "Author featured in the Vietnam section of this atlas. Their writing engages with decolonization and colonial legacies—reclaims local voice about war shaped by imperial conflicts and foreign domination.",
+    "ru": "Автор, представленный в разделе «Вьетнам» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает войну как последствия имперских конфликтов и борьбу за собственный исторический голос."
+  },
+  "Camara Laye": {
+    "en": "Author featured in the Guinea section of this atlas. Their writing engages with decolonization and colonial legacies—shows colonial education as a tool of power and the making of divided identities.",
+    "ru": "Автор, представленный в разделе «Гвинея» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает колониальное образование как инструмент власти и формирование «двойной» идентичности."
+  },
+  "Catherine Lim": {
+    "en": "Author featured in the Singapore section of this atlas. Their writing engages with decolonization and colonial legacies—shows postcolonial modernization and cultural hybridity through local micro-plots.",
+    "ru": "Автор, представленный в разделе «Сингапур» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает постколониальную модернизацию и культурную гибридность через локальные сюжеты."
+  },
+  "Chinua Achebe": {
+    "en": "Nigerian novelist and critic, widely regarded as a foundational figure of modern African literature; he wrote about cultural disruption and power under colonialism.",
+    "ru": "Нигерийский писатель и критик, одна из ключевых фигур современной африканской литературы; писал о культурном разломе и власти в условиях колониализма."
+  },
+  "Claude McKay": {
+    "en": "Jamaican-born poet and novelist linked to the Harlem Renaissance; wrote about race, migration, and colonial modernity.",
+    "ru": "Поэт и прозаик, родившийся на Ямайке, связанный с Гарлемским ренессансом; писал о расе, миграции и колониальной современности."
+  },
+  "Derek Walcott": {
+    "en": "Saint Lucian poet and playwright, Nobel laureate; his writing explores Caribbean history, language, and the scars of colonialism.",
+    "ru": "Поэт и драматург из Сент‑Люсии, лауреат Нобелевской премии; писал о карибской истории, языке и травмах колониализма."
+  },
+  "Dominic Mulaishi": {
+    "en": "Author featured in the Zambia section of this atlas. Their writing engages with decolonization and colonial legacies—captures the transition: collapse of colonial order and the difficulty of building the new.",
+    "ru": "Автор, представленный в разделе «Замбия» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает переходный период: распад колониального порядка и сложность построения нового."
+  },
+  "Doris Lessing": {
+    "en": "Author featured in the Zimbabwe section of this atlas. Their writing engages with decolonization and colonial legacies—unmasks racial/class hierarchies of colonial rule and the psychology of settler power.",
+    "ru": "Автор, представленный в разделе «Зимбабве» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — разоблачает расовые и классовые иерархии колониального режима и психологию поселенческого господства."
+  },
+  "Fadwa Tuqan": {
+    "en": "Author featured in the Jordan section of this atlas. Their writing engages with decolonization and colonial legacies—a women’s voice from a region of imperial entanglements broadens postcolonial literary maps.",
+    "ru": "Автор, представленный в разделе «Иордания» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — женский голос из региона колониальных/имперских пересечений расширяет постколониальную карту литературы."
+  },
+  "Florence Aïssé": {
+    "en": "Author featured in the Benin section of this atlas. Their writing engages with decolonization and colonial legacies—can be read as critique of colonial modernity’s inherited hierarchies and forms of alienation.",
+    "ru": "Автор, представленный в разделе «Бенин» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — считывается как критика наследия колониальной модерности: отчуждение, разрыв норм и навязанных иерархий."
+  },
+  "Gaël Faye": {
+    "en": "Author featured in the Burundi section of this atlas. Their writing engages with decolonization and colonial legacies—shows afterlives of colonial identity politics and classifications that feed conflict and trauma.",
+    "ru": "Автор, представленный в разделе «Бурунди» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает последствия колониальных классификаций и политик идентичности, приведших к травме и конфликту."
+  },
+  "George Lamming": {
+    "en": "Barbadian novelist and essayist; a major voice of Caribbean decolonization and migration narratives.",
+    "ru": "Барбадосский писатель и эссеист; один из ключевых голосов карибской деколонизации и литературы миграции."
+  },
+  "Grace Mera Molisa": {
+    "en": "Author featured in the Vanuatu section of this atlas. Their writing engages with decolonization and colonial legacies—postcolonial literature as activism: language used for resistance and dignity.",
+    "ru": "Автор, представленный в разделе «Вануату» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — постколониальная литература как активизм: язык служит сопротивлению и восстановлению достоинства."
+  },
+  "Hanan al-Shaykh": {
+    "en": "Author featured in the Lebanon section of this atlas. Their writing engages with decolonization and colonial legacies—connects gendered control to postcolonial modernity and global capital.",
+    "ru": "Автор, представленный в разделе «Ливан» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — критика патриархальных и социально-экономических структур в постколониальном контексте глобального капитала."
+  },
+  "Ian Strachan": {
+    "en": "Author featured in the The Bahamas section of this atlas. Their writing engages with decolonization and colonial legacies—focuses on postcolonial inequality and the afterlives of colonial systems.",
+    "ru": "Автор, представленный в разделе «Багамы» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — фокус на последствиях колониализма и неравенства в постколониальной реальности."
+  },
+  "Jack Harris": {
+    "en": "Author featured in the Nauru section of this atlas. Their writing engages with decolonization and colonial legacies—critiques colonial extraction economies and their neo-colonial continuations.",
+    "ru": "Автор, представленный в разделе «Науру» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — критика колониальной экономики и экстракции: неоколониальные формы эксплуатации территорий."
+  },
+  "Jack Mapanje": {
+    "en": "Author featured in the Malawi section of this atlas. Their writing engages with decolonization and colonial legacies—addresses the postcolonial state: repression, control, and the fight for voice.",
+    "ru": "Автор, представленный в разделе «Малави» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — поднимает темы постколониального государства: репрессии, контроль и борьба за голос."
+  },
+  "Jamaica Kincaid": {
+    "en": "Antiguan-American writer whose prose critiques empire, tourism, and family history as entangled with colonial power.",
+    "ru": "Писательница из Антигуа (живёт в США); её проза критикует империю, туризм и семейную память как часть колониальной власти."
+  },
+  "Jean Rhys": {
+    "en": "Dominica-born writer best known for reimagining the Caribbean background of classic English literature and exposing colonial gender and racial hierarchies.",
+    "ru": "Писательница, родившаяся на Доминике; известна переосмыслением карибского контекста классической английской литературы и критикой колониальных иерархий."
+  },
+  "Jokha Alharthi": {
+    "en": "Author featured in the Oman section of this atlas. Their writing engages with decolonization and colonial legacies—shows postcolonial modernity beyond europe: class, gender, and changing power structures.",
+    "ru": "Автор, представленный в разделе «Оман» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает постколониальную современность вне европы: изменение норм, классов и языка власти."
+  },
+  "Joseph Brahim Seid": {
+    "en": "Author featured in the Chad section of this atlas. Their writing engages with decolonization and colonial legacies—decolonizes the gaze by foregrounding local experience beyond colonial descriptions.",
+    "ru": "Автор, представленный в разделе «Чад» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — деколонизирует взгляд на страну, выводя местный опыт из тени колониальных описаний."
+  },
+  "José Rizal": {
+    "en": "Filipino writer and reformer whose novels became central to anti-colonial thought under Spanish rule.",
+    "ru": "Филиппинский писатель и общественный деятель; его романы стали важной частью антиколониальной мысли во времена испанского владычества."
+  },
+  "Julian Maka’a": {
+    "en": "Author featured in the Solomon Islands section of this atlas. Their writing engages with decolonization and colonial legacies—restores local perspectives and cultural autonomy after colonial intervention.",
+    "ru": "Автор, представленный в разделе «Соломоновы Острова» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — возвращает локальный взгляд и культурную автономию малых обществ после колониальных вмешательств."
+  },
+  "Julien Ngoma": {
+    "en": "Author featured in the Gabon section of this atlas. Their writing engages with decolonization and colonial legacies—critiques postcolonial bureaucracy and dependencies inherited from colonial systems.",
+    "ru": "Автор, представленный в разделе «Габон» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — критика постколониальной бюрократии и зависимостей, унаследованных от колониальной системы."
+  },
+  "Kamau Brathwaite": {
+    "en": "Barbadian poet and historian who developed concepts of Caribbean ‘nation language’ and wrote about slavery, diaspora, and colonial aftermaths.",
+    "ru": "Барбадосский поэт и историк; развивал идею «языка нации» Карибов и писал о рабстве, диаспоре и последствиях колониализма."
+  },
+  "Kevin Baldeo": {
+    "en": "Author featured in the Saint Vincent and the Grenadines section of this atlas. Their writing engages with decolonization and colonial legacies—affirms multilingual caribbean literary autonomy beyond metropolitan gatekeeping.",
+    "ru": "Автор, представленный в разделе «Сент-Винсент и Гренадины» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — фиксирует многоязычие и культурную автономию карибов, разрывая монополию метрополии на «литературу»."
+  },
+  "Kiran Desai": {
+    "en": "Indian novelist writing in English; explores globalization, migration, and uneven postcolonial modernity.",
+    "ru": "Индийская писательница, пишущая по‑английски; исследует глобализацию, миграцию и неравномерную постколониальную современность."
+  },
+  "Kofi Awoonor": {
+    "en": "Author featured in the Togo section of this atlas. Their writing engages with decolonization and colonial legacies—registers colonial trauma and the struggle for subjectivity through language.",
+    "ru": "Автор, представленный в разделе «Того» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — поэзия фиксирует травму колониализма и борьбу за субъектность через язык и образ."
+  },
+  "Lenrie Peters": {
+    "en": "Author featured in the The Gambia section of this atlas. Their writing engages with decolonization and colonial legacies—records peripheral experience: language, mobility, and self-naming in a postcolonial world.",
+    "ru": "Автор, представленный в разделе «Гамбия» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — фиксирует опыт периферии империи: язык, миграция и культурное самоназывание в постколониальном мире."
+  },
+  "Lloyd Fernando": {
+    "en": "Author featured in the Malaysia section of this atlas. Their writing engages with decolonization and colonial legacies—explores hybrid identity and racial engineering as colonial legacies.",
+    "ru": "Автор, представленный в разделе «Малайзия» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — исследует гибридную идентичность и расовые напряжения как наследие колониальной социальной инженерии."
+  },
+  "Loung Ung": {
+    "en": "Author featured in the Cambodia section of this atlas. Their writing engages with decolonization and colonial legacies—witnessing trauma expands postcolonial discussions of power, violence, and memory.",
+    "ru": "Автор, представленный в разделе «Камбоджа» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — свидетельство о насилии и травме региона, важное для постколониального разговора о власти и памяти."
+  },
+  "Léopold Sédar Senghor": {
+    "en": "Author featured in the Senegal section of this atlas. Their writing engages with decolonization and colonial legacies—an early anti-colonial self-naming that asserts black identity and culture.",
+    "ru": "Автор, представленный в разделе «Сенегал» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — один из ранних голосов антиколониального самоназвания: утверждение чёрной идентичности и культуры."
+  },
+  "Ma Ma Lay": {
+    "en": "Author featured in the Myanmar section of this atlas. Their writing engages with decolonization and colonial legacies—shows how violence and inherited structures shape postcolonial societies and speech.",
+    "ru": "Автор, представленный в разделе «Мьянма» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает, как колониальное наследие и война формируют общество, где власть контролирует речь и жизнь."
+  },
+  "Merle Collins": {
+    "en": "Author featured in the Grenada section of this atlas. Their writing engages with decolonization and colonial legacies—frames political change as a postcolonial process shaped by power, violence, and memory.",
+    "ru": "Автор, представленный в разделе «Гренада» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает политическую историю острова как постколониальный процесс: власть, насилие и память."
+  },
+  "Mia Couto": {
+    "en": "Author featured in the Mozambique section of this atlas. Their writing engages with decolonization and colonial legacies—explores the afterlives of colonialism and war through a localized poetics of memory.",
+    "ru": "Автор, представленный в разделе «Мозамбик» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — исследует последствия колониализма и войны, создавая локальную поэтику памяти и выживания."
+  },
+  "Michael Ondaatje": {
+    "en": "Sri Lankan–Canadian novelist and poet; his work often blends memory and history across migration and colonial contexts.",
+    "ru": "Шри-ланкийско‑канадский писатель и поэт; в его прозе память и история переплетаются в опыте миграции и колониальных контекстах."
+  },
+  "Mohammed Al Murr": {
+    "en": "Author featured in the United Arab Emirates section of this atlas. Their writing engages with decolonization and colonial legacies—connects postcolonial modernization to global economy and migrant labor.",
+    "ru": "Автор, представленный в разделе «ОАЭ» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — связывает постколониальную модернизацию с глобальной экономикой и мигрантским трудом."
+  },
+  "Mohsin Hamid": {
+    "en": "Pakistani novelist and essayist known for concise, globally oriented fiction about migration, identity, and contemporary power.",
+    "ru": "Пакистанский писатель и эссеист; известен лаконичной прозой о миграции, идентичности и современной власти."
+  },
+  "Mongo Beti": {
+    "en": "Author featured in the Cameroon section of this atlas. Their writing engages with decolonization and colonial legacies—deconstructs the mission discourse and shows cultural violence of colonial ideology.",
+    "ru": "Автор, представленный в разделе «Камерун» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — деконструирует миссионерский дискурс и показывает культурное насилие «цивилизаторской» идеологии."
+  },
+  "Moussa Ould Ebnou": {
+    "en": "Author featured in the Mauritania section of this atlas. Their writing engages with decolonization and colonial legacies—uses liminality to think postcolonial hybridity and life between cultures.",
+    "ru": "Автор, представленный в разделе «Мавритания» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — фигура «барзаха» помогает осмыслить постколониальную гибридность и жизнь между культурами."
+  },
+  "Nazi Boni": {
+    "en": "Author featured in the Burkina Faso section of this atlas. Their writing engages with decolonization and colonial legacies—reclaims local traditions and shows how colonization fractures social structures.",
+    "ru": "Автор, представленный в разделе «Буркина-Фасо» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — возвращает ценность местным традициям и показывает, как колонизация ломает социальные структуры."
+  },
+  "Ndeitila Mbako": {
+    "en": "Author featured in the Namibia section of this atlas. Their writing engages with decolonization and colonial legacies—restores multiple local voices against colonial monopoly over representation.",
+    "ru": "Автор, представленный в разделе «Намибия» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — возвращает множественные локальные голоса и сопротивляется колониальной монополии на представление."
+  },
+  "Ngũgĩ wa Thiong'o": {
+    "en": "Kenyan writer and theorist of decolonization; he advocates linguistic and cultural decolonization and writes about colonial violence and its afterlives.",
+    "ru": "Кенийский писатель и теоретик деколонизации; выступает за языковую и культурную деколонизацию и пишет о колониальном насилии и его последствиях."
+  },
+  "Nuruddin Farah": {
+    "en": "Somali novelist whose work examines dictatorship, exile, and the long shadow of colonial borders and institutions.",
+    "ru": "Сомалийский писатель; в его романах — диктатура, изгнание и «длинная тень» колониальных границ и институтов."
+  },
+  "Outieng Somlit": {
+    "en": "Author featured in the Laos section of this atlas. Their writing engages with decolonization and colonial legacies—plural ‘voices’ counter external narratives and restore local perspective.",
+    "ru": "Автор, представленный в разделе «Лаос» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — множественность «голосов» противостоит внешним нарративам и возвращает локальную перспективу."
+  },
+  "Pepetela": {
+    "en": "Author featured in the Angola section of this atlas. Their writing engages with decolonization and colonial legacies—centers anti-colonial resistance and the complexities of nation-making after empire.",
+    "ru": "Автор, представленный в разделе «Ангола» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — фиксирует антиколониальное сопротивление и сложность нации после колониализма, а не «простую победу»."
+  },
+  "Pierre Samba": {
+    "en": "Author featured in the Central African Republic section of this atlas. Their writing engages with decolonization and colonial legacies—uses nature and silence as metaphors for colonial violence and suppressed histories.",
+    "ru": "Автор, представленный в разделе «ЦАР» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — природа и «тишина» работают как метафора колониального насилия и невысказанной истории."
+  },
+  "Pramoedya Ananta Toer": {
+    "en": "Indonesian novelist who wrote landmark historical fiction on colonial rule, nationalism, and political repression.",
+    "ru": "Индонезийский писатель, автор знаковых исторических романов о колониальном правлении, национализме и политических репрессиях."
+  },
+  "Salman Rushdie": {
+    "en": "British-Indian novelist associated with postcolonial and diasporic writing; known for blending history, myth, and satire to question power and identity.",
+    "ru": "Британско‑индийский писатель постколониальной и диаспоральной традиции; соединяет историю, миф и сатиру, чтобы говорить о власти и идентичности."
+  },
+  "Scholastique Mukasonga": {
+    "en": "Rwandan-French writer; her work is shaped by memory, exile, and the histories of violence in Rwanda.",
+    "ru": "Руандийско‑французская писательница; её проза связана с памятью, изгнанием и историей насилия в Руанде."
+  },
+  "Sinan Antoon": {
+    "en": "Iraqi-American poet and novelist; writes about war, authoritarianism, and cultural memory in modern Iraq.",
+    "ru": "Иракско‑американский поэт и писатель; пишет о войне, авторитаризме и культурной памяти современного Ирака."
+  },
+  "Sony Labou Tansi": {
+    "en": "Author featured in the DR Congo section of this atlas. Their writing engages with decolonization and colonial legacies—links colonial violence to postcolonial regimes and reveals cycles of repression.",
+    "ru": "Автор, представленный в разделе «Конго (Киншаса)» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — связывает колониальное насилие с постколониальными режимами и демонстрирует цикл репрессий."
+  },
+  "Subramani": {
+    "en": "Author featured in the Fiji section of this atlas. Their writing engages with decolonization and colonial legacies—shows postcolonial pressures of tourism, markets, and externally scripted ‘development’.",
+    "ru": "Автор, представленный в разделе «Фиджи» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает постколониальные последствия туризма, рынка и внешних сценариев развития."
+  },
+  "Sulaiman Addonia": {
+    "en": "Author featured in the Eritrea section of this atlas. Their writing engages with decolonization and colonial legacies—collective witnessing counters historical erasure and is central to postcolonial remembrance.",
+    "ru": "Автор, представленный в разделе «Эритрея» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — коллективность и свидетельство — важный постколониальный жанр, противостоящий стиранию истории."
+  },
+  "Tahmima Anam": {
+    "en": "Author featured in the Bangladesh section of this atlas. Their writing engages with decolonization and colonial legacies—shows nation-making and the costs of decolonization, including trauma and violence.",
+    "ru": "Автор, представленный в разделе «Бангладеш» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает рождение нации и цену освобождения, включая травму насилия и распад имперских связей."
+  },
+  "Tayeb Salih": {
+    "en": "Sudanese novelist whose classic works explore the encounter between Sudan and Britain and the psychological aftereffects of empire.",
+    "ru": "Суданский писатель; в его классических романах исследуется встреча Судана и Британии и психологические последствия империи."
+  },
+  "Tereti Tea’iti": {
+    "en": "Author featured in the Kiribati section of this atlas. Their writing engages with decolonization and colonial legacies—asserts cultural continuity and the right of small peoples to their own narratives.",
+    "ru": "Автор, представленный в разделе «Кирибати» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — закрепляет культурную непрерывность и право малых народов на собственный нарратив."
+  },
+  "Thomas Mofolo": {
+    "en": "Author featured in the Lesotho section of this atlas. Their writing engages with decolonization and colonial legacies—rewrites history from an african center, challenging colonial versions of the past.",
+    "ru": "Автор, представленный в разделе «Лесото» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — переписывает историю из африканского центра, оспаривая колониальные версии прошлого и героизма."
+  },
+  "Tsitsi Dangarembga": {
+    "en": "Zimbabwean novelist and filmmaker; her work foregrounds gender, education, and the social costs of colonial and postcolonial power.",
+    "ru": "Зимбабвийская писательница и режиссёр; пишет о гендере, образовании и социальной цене колониальной и постколониальной власти."
+  },
+  "Tuai Tuai": {
+    "en": "Author featured in the Tuvalu section of this atlas. Their writing engages with decolonization and colonial legacies—affirms local culture and language against colonial erasure and global standardization.",
+    "ru": "Автор, представленный в разделе «Тувалу» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — утверждает локальную культуру и язык как ответ на колониальное стирание и глобальную стандартизацию."
+  },
+  "V. S. Naipaul": {
+    "en": "Trinidadian-British novelist and Nobel laureate whose work examines migration, colonial legacies, and the ambiguities of postcolonial societies.",
+    "ru": "Тринидадско‑британский писатель, лауреат Нобелевской премии; исследовал миграцию, колониальные наследия и противоречия постколониальных обществ."
+  },
+  "Vincent Eri": {
+    "en": "Author featured in the Papua New Guinea section of this atlas. Their writing engages with decolonization and colonial legacies—shows colonization as cultural violence and identity formation through imposed institutions.",
+    "ru": "Автор, представленный в разделе «Папуа — Новая Гвинея» этого атласа. Его/её тексты связаны с деколонизацией и наследием колониализма — показывает колонизацию как насилие над культурой и формирование идентичности через чужие институты."
+  },
+  "Zakaria Tamer": {
+    "en": "Syrian short-story writer known for allegorical prose critiquing oppression and social injustice.",
+    "ru": "Сирийский писатель‑новеллист; известен аллегоричной прозой, критикующей насилие и социальную несправедливость."
+  }
+};
 function pcText(key){
   return (PC_I18N[lang] && PC_I18N[lang][key]) ? PC_I18N[lang][key] : (PC_I18N.ru[key] || "");
 }
@@ -2215,6 +2623,14 @@ if(!scopeEl) return;
 
 
 
+
+function getAuthorBio(authorName){
+  const bio = (AUTHOR_BIOS && AUTHOR_BIOS[authorName]) ? AUTHOR_BIOS[authorName] : null;
+  if(!bio) return "";
+  const txt = (lang === 'en') ? (bio.en || bio.ru || "") : (bio.ru || bio.en || "");
+  return (txt || "");
+}
+
 function renderPostcolonial(country){
   const titleEl = document.getElementById('pcTitle');
   if(titleEl) titleEl.textContent = pcText('title');
@@ -2241,12 +2657,20 @@ function renderPostcolonial(country){
     <div class="pcList">
       ${data.works.map(w => `
         <div class="pcItem">
-          <img class="pcCover" alt="" src="" data-author="${w.author}" data-title="${w.title}"/>
+          <div class="pcCoverBox">
+            <img class="pcCover" alt="" src="" data-author="${w.author}" data-title="${w.title}"/>
+          </div>
           <div class="pcMeta">
-            <b>${w.author}</b><br/>
-            <span>${w.title}</span>
-            <div class="pcAnnotation" data-tw="1" data-text="${(lang==='en'?(w.annotation_en||w.annotation_ru):(w.annotation_ru||''))}"></div>
-            <div class="pcPostcol" data-tw="1" data-text="${(lang==='en'?(w.postcolonial_en||w.postcolonial_ru):(w.postcolonial_ru||''))}"></div>
+            <div class="pcAuthorBlock">
+              <div class="pcAName">${w.author}</div>
+              ${getAuthorBio(w.author) ? `<div class="pcBio">${getAuthorBio(w.author)}</div>` : ``}
+            </div>
+            <div class="pcDivider" role="presentation"></div>
+            <div class="pcWorkBlock">
+              <div class="pcWTitle">${w.title}</div>
+              <div class="pcAnnotation" data-tw="1" data-text="${(lang==='en'?(w.annotation_en||w.annotation_ru):(w.annotation_ru||''))}"></div>
+              <div class="pcPostcol" data-tw="1" data-text="${(lang==='en'?(w.postcolonial_en||w.postcolonial_ru):(w.postcolonial_ru||''))}"></div>
+            </div>
           </div>
         </div>
       `).join('')}
@@ -2697,7 +3121,14 @@ function setLang(next){
     if(wasOpen) openCard(currentCountry);
   }
 
-  const lbl = document.getElementById('langLabel');
+  
+  // Re-render postcolonial literature block (below the map) when language changes
+  const pcPanel = document.getElementById('pcPanel');
+  if(pcPanel && pcPanel.classList.contains('open')){
+    renderPostcolonial(currentCountry);
+  }
+
+const lbl = document.getElementById('langLabel');
   if(lbl) lbl.textContent = (lang === 'ru') ? 'RU' : 'EN';
 
 }

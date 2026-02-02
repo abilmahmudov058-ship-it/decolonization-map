@@ -177,18 +177,6 @@
     html.page-loaded .st5{transition-delay:440ms}
     html.page-loaded .st6{transition-delay:520ms}
   </style>
-<script>
-(function(){
-  const forceDesktop = /[?&]desktop=1/.test(location.search);
-  const isMobile = (window.matchMedia && window.matchMedia("(max-width: 820px), (pointer: coarse)").matches)
-    || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  if(isMobile && !forceDesktop){
-    if(!/index_mobile\.html$/i.test(location.pathname)){
-      location.replace("index_mobile.html" + location.search);
-    }
-  }
-})();
-</script>
 </head>
 <body>
   <div class="pageTransition" aria-hidden="true"></div>
